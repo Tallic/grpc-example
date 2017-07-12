@@ -3,10 +3,10 @@ package at.jku.isse.psma.tutorial.grpc;
 import com.google.common.base.Joiner;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.slf4j.Marker;
 
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("Duplicates")
 public class Student {
 
     private static final Logger logger = LoggerFactory.getLogger(Student.class);
@@ -33,18 +34,18 @@ public class Student {
 
         @Override
         public void onNext(final Answer value) {
-            logger.info("Professor: {}", value.getText());
+            logger.info("*** [Professor]: {}", value.getText());
         }
 
         @Override
         public void onError(final Throwable t) {
-            logger.error("Something disturbed the classroom.", t);
+            logger.error("*** [Storyteller] Something disturbed the classroom.", t);
             finishLath.countDown();
         }
 
         @Override
         public void onCompleted() {
-            logger.info("Java Student: Thank you professor.");
+            logger.info("*** [Java Student]: Thank you professor.");
             finishLath.countDown();
         }
     }
@@ -56,31 +57,35 @@ public class Student {
                 .build();
     }
 
+    private void completeAsk(final LoggerStreamObserver responseObserver) {
+        try {
+            responseObserver.finishLath.await(1, TimeUnit.MINUTES);
+            logger.info("*** [Storyteller]: Finished asking.");
+        } catch (InterruptedException e) {
+            MDC.put("speaker", "Storyteller");
+            logger.warn("*** [Storyteller]: The professor did not answer within 1 minute.");
+        }
+    }
+
+    // Point to Point Communication
     public void askSimpleQuestion(String question) {
-        logger.info("Asking the professor a simple question.");
-        logger.info("Java Student:{}", question);
+        logger.info("*** [Java Student]: {}", question);
 
         Question questionProto = newQuestion(question);
 
         LoggerStreamObserver responseObserver = new LoggerStreamObserver();
-        asyncProfessor.askQuestionWithAnswer(questionProto, responseObserver);
+        asyncProfessor.askSimpleQuestion(questionProto, responseObserver);
 
-        try {
-            responseObserver.finishLath.await(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.warn("The professor did not answer within 1 minute.");
-        }
-
-        logger.info("Finished asking.");
+        completeAsk(responseObserver);
     }
 
+    // Stream to Point Communication
     public void askMultipleSimpleQuestions(List<String> questions) {
-        logger.info("Asking the professor multiple simple questions.");
-        logger.info("Java Student:{}", Joiner.on(" AND ").join(questions));
+        logger.info("*** [Java Student]: {}", Joiner.on(" | ").join(questions));
 
         final LoggerStreamObserver responseObserver = new LoggerStreamObserver();
 
-        StreamObserver<Question> requestStreamObserver = asyncProfessor.askQuestionsWithAnswer(responseObserver);
+        StreamObserver<Question> requestStreamObserver = asyncProfessor.askMultipleSimpleQuestions(responseObserver);
 
         questions.stream()
                 .map(this::newQuestion)
@@ -88,42 +93,29 @@ public class Student {
 
         requestStreamObserver.onCompleted();
 
-        try {
-            responseObserver.finishLath.await(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.warn("The professor did not answer within 1 minute.");
-        }
-
-
-        logger.info("Finished asking.");
+        completeAsk(responseObserver);
     }
 
+    // Point to Stream Communication
     public void askComplexQuestion(String question) {
-        logger.info("Asking the professor a complex question.");
-        logger.info(Marker."Java Student:{}", question);
+        logger.info("*** [Java Student]: {}", question);
 
         Question questionProto = newQuestion(question);
 
         final LoggerStreamObserver responseObserver = new LoggerStreamObserver();
 
-        asyncProfessor.askQuestionWithAnswer(questionProto, responseObserver);
+        asyncProfessor.askComplexQuestion(questionProto, responseObserver);
 
-        try {
-            responseObserver.finishLath.await(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.warn("The professor did not answer within 1 minute.");
-        }
-
-        logger.info("Finished asking.");
+        completeAsk(responseObserver);
     }
 
+    // Stream to Stream Communication
     public void askMultipleComplexQuestions(List<String> questions) {
-        logger.info("Asking the professor multiple complex questions.");
-        logger.info("Java Student:{}", Joiner.on(" AND ").join(questions));
+        logger.info("*** [Java Student]: {}", Joiner.on(" AND ").join(questions));
 
         final LoggerStreamObserver responseObserver = new LoggerStreamObserver();
 
-        StreamObserver<Question> requestStreamObserver = asyncProfessor.askQuestionsWithAnswer(responseObserver);
+        StreamObserver<Question> requestStreamObserver = asyncProfessor.askMultipleComplexQuestions(responseObserver);
 
         questions.stream()
                 .map(this::newQuestion)
@@ -131,12 +123,6 @@ public class Student {
 
         requestStreamObserver.onCompleted();
 
-        try {
-            responseObserver.finishLath.await(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            logger.warn("The professor did not answer within 1 minute.");
-        }
-
-        logger.info("Finished asking.");
+        completeAsk(responseObserver);
     }
 }

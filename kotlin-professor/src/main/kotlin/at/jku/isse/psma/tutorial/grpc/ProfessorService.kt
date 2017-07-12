@@ -13,19 +13,20 @@ class ProfessorService(val name: String) : ProfessorServiceGrpc.ProfessorService
     private val knowledge: Map<String, String> = mapOf(
             Pair("your name", "My name is $name."),
             Pair("age", "I am 45 years old."),
-            Pair("pi", "Pi is 3.12 and so forth..."),
+            Pair("mde", "MDE means model driven engineering."),
             Pair("my mark", "An A but don't get ahead of yourself."),
-            Pair("next topic", "We will learn about gRpc.")
-    )
+            Pair("next topic", "We will learn about gRpc."))
             .withDefault { "I cannot help you with that." }
 
     private fun findAnswers(question: String): List<String> {
-        return knowledge.entries
+        val answer = knowledge.entries
                 .filter { (key, _) -> question.toLowerCase().contains(key) }
                 .map { it.value }
+
+        return if (answer.isNotEmpty()) answer else listOf("I cannot help you with that.")
     }
 
-    override fun askQuestionWithAnswer(request: Question, responseObserver: StreamObserver<Answer>) {
+    override fun askSimpleQuestion(request: Question, responseObserver: StreamObserver<Answer>) {
         logger.info("Receiving new question from ${request.name} (${request.id})")
 
         val answerText = findAnswers(request.text).first()
@@ -42,24 +43,7 @@ class ProfessorService(val name: String) : ProfessorServiceGrpc.ProfessorService
         logger.info("Answered question ${request.id}")
     }
 
-    override fun askQuestionWithAnswers(request: Question, responseObserver: StreamObserver<Answer>) {
-        logger.info("Receiving new question from ${request.name} (${request.id})")
-
-        findAnswers(request.text)
-                .forEach {
-                    val answer = Answer.newBuilder()
-                            .setId(request.id)
-                            .setText(it)
-                            .build()
-                    responseObserver.onNext(answer)
-                }
-
-        responseObserver.onCompleted()
-
-        logger.info("Answered question ${request.id}")
-    }
-
-    override fun askQuestionsWithAnswer(responseObserver: StreamObserver<Answer>): StreamObserver<Question> {
+    override fun askMultipleSimpleQuestions(responseObserver: StreamObserver<Answer>): StreamObserver<Question> {
         logger.info("Receiving multiple questions ... i will provide only one answer.")
 
         return object : StreamObserver<Question> {
@@ -82,7 +66,7 @@ class ProfessorService(val name: String) : ProfessorServiceGrpc.ProfessorService
             override fun onCompleted() {
                 val answer = Answer.newBuilder()
                         .setId(id)
-                        .setText(answers.joinToString("\n"))
+                        .setText(answers.joinToString(" "))
                         .build()
 
                 responseObserver.onNext(answer)
@@ -94,7 +78,24 @@ class ProfessorService(val name: String) : ProfessorServiceGrpc.ProfessorService
         }
     }
 
-    override fun askQuestionsWithAnswers(responseObserver: StreamObserver<Answer>): StreamObserver<Question> {
+    override fun askComplexQuestion(request: Question, responseObserver: StreamObserver<Answer>) {
+        logger.info("Receiving new question from ${request.name} (${request.id})")
+
+        findAnswers(request.text)
+                .forEach {
+                    val answer = Answer.newBuilder()
+                            .setId(request.id)
+                            .setText(it)
+                            .build()
+                    responseObserver.onNext(answer)
+                }
+
+        responseObserver.onCompleted()
+
+        logger.info("Answered question ${request.id}")
+    }
+
+    override fun askMultipleComplexQuestions(responseObserver: StreamObserver<Answer>): StreamObserver<Question> {
         logger.info("Receiving multiple questions ... i will provide multiple answers.")
 
         return object : StreamObserver<Question> {

@@ -20,19 +20,13 @@ public class StudentTest {
     @Test
     public void askSimpleQuestion_nameAge_onlyName() {
         Student student = new Student();
-        student.askComplexQuestion("What is your name and how old are you? ");
+        student.askSimpleQuestion("What is your name and your age?");
     }
 
     @Test
     public void askComplexQuestion_nameAge_success() {
         Student student = new Student();
-        student.askComplexQuestion("What is your name and how old are you? ");
-    }
-
-    @Test
-    public void askComplexQuestions_nameAge_success() {
-        Student student = new Student();
-        student.askMultipleSimpleQuestions(ImmutableList.of("What is your name?", "How old are you?"));
+        student.askComplexQuestion("What is your name and your age?");
     }
 
     @Test
@@ -41,7 +35,7 @@ public class StudentTest {
         student.askMultipleSimpleQuestions(
                 ImmutableList.of(
                         "What is your name?",
-                        "How old are you?",
+                        "What is your age?",
                         "What's my mark in this course?"
                 )
         );
@@ -50,9 +44,9 @@ public class StudentTest {
     @Test
     public void askMultipleComplexQuestions_nameAgeMarkTopic_success() {
         Student student = new Student();
-        student.askMultipleSimpleQuestions(
+        student.askMultipleComplexQuestions(
                 ImmutableList.of(
-                        "What is your name and how old are you?",
+                        "What is your name and what is your age?",
                         "What's currently my mark in this course and what's the next topic?"
                 )
         );

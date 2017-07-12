@@ -9,16 +9,16 @@ option java_multiple_files = true;
 // ---- Services ----
 
 service ProfessorService {
-    rpc askQuestionWithAnswer (Question) returns (Answer) {
+    rpc askSimpleQuestion (Question) returns (Answer) {
     }
 
-    rpc askQuestionsWithAnswer (stream Question) returns (Answer) {
+    rpc askMultipleSimpleQuestions (stream Question) returns (Answer) {
     }
 
-    rpc askQuestionWithAnswers (Question) returns (stream Answer) {
+    rpc askComplexQuestion (Question) returns (stream Answer) {
     }
 
-    rpc askQuestionsWithAnswers (stream Question) returns (stream Answer) {
+    rpc askMultipleComplexQuestions (stream Question) returns (stream Answer) {
     }
 }
 
