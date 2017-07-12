@@ -12,8 +12,11 @@ class ProfessorService(val name: String) : ProfessorServiceGrpc.ProfessorService
 
     private val knowledge: Map<String, String> = mapOf(
             Pair("your name", "My name is $name."),
+            Pair("age", "I am 45 years old."),
             Pair("pi", "Pi is 3.12 and so forth..."),
-            Pair("my mark", "A 1 but don't get ahead of yourself."))
+            Pair("my mark", "An A but don't get ahead of yourself."),
+            Pair("next topic", "We will learn about gRpc.")
+    )
             .withDefault { "I cannot help you with that." }
 
     private fun findAnswers(question: String): List<String> {

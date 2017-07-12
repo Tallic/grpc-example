@@ -10,7 +10,7 @@ from Classroom_pb2 import Question
 class Student:
     def __init__(self) -> None:
         super().__init__()
-        channel = grpc.insecure_channel('localhost:50051')
+        channel = grpc.insecure_channel('localhost:50051')  # no ssl
         self.asyncProfessor = Classroom_pb2_grpc.ProfessorServiceStub(channel)
 
     def ask_simple_question(self, question: str):

@@ -17,6 +17,9 @@ dependencies {
     // Logging
     compile group: 'org.slf4j', name: 'slf4j-api', version: version_slf4j
     compile group: 'ch.qos.logback', name: 'logback-classic', version: version_logback
+
+    // Testing
+    testCompile group: 'org.testng', name: 'testng', version: version_testng
 }
 
 // ---- Source Sets ----
@@ -49,6 +52,12 @@ protobuf {
 }
 
 compileKotlin.dependsOn 'generateProto'
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}
 
 compileKotlin {
     kotlinOptions {
