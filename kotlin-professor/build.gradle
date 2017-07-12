@@ -1,0 +1,62 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.1.3'
+    id 'com.google.protobuf' version '0.8.1'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Networking
+    compile group: 'io.grpc', name: 'grpc-all', version: version_grpc
+    // Language
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jre8', version: version_kotlin
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: version_kotlin
+
+    // Logging
+    compile group: 'org.slf4j', name: 'slf4j-api', version: version_slf4j
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: version_logback
+}
+
+// ---- Source Sets ----
+
+sourceSets {
+    main {
+        java {
+            srcDir "${buildDir}/generated/source/proto/main/java"
+            srcDir "${buildDir}/generated/source/proto/main/grpc"
+        }
+    }
+}
+
+// ---- Protocol Buffer & gRpc ----
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$version_protoc"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${version_grpc}"
+        }
+    }
+    generateProtoTasks {
+        ofSourceSet('main')*.plugins {
+            grpc {}
+        }
+    }
+}
+
+compileKotlin.dependsOn 'generateProto'
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = version_java_lang
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = version_java_lang
+    }
+}

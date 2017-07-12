@@ -1,0 +1,13 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Logging
+    compile group: 'org.slf4j', name: 'slf4j-api', version: version_slf4j
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: version_logback
+}

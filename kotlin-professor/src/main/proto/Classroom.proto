@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package at.jku.isse.psma.tutorial.grpc;
+
+option java_package = "at.jku.isse.psma.tutorial.grpc";
+option java_outer_classname = "ClassroomProtos";
+option java_multiple_files = true;
+
+// ---- Services ----
+
+service ProfessorService {
+    rpc askQuestionWithAnswer (Question) returns (Answer) {
+    }
+
+    rpc askQuestionsWithAnswer (stream Question) returns (Answer) {
+    }
+
+    rpc askQuestionWithAnswers (Question) returns (stream Answer) {
+    }
+
+    rpc askQuestionsWithAnswers (stream Question) returns (stream Answer) {
+    }
+}
+
+// ---- Messages ----
+
+message Question {
+    string id = 1;
+    string name = 2;
+    string text = 3;
+}
+
+message Answer {
+    string id = 1;
+    string text = 2;
+}

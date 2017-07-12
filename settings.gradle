@@ -1,0 +1,2 @@
+include 'python-student', 'java-student', 'kotlin-professor'
+rootProject.name = 'gRpc-Classroom'
