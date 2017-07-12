@@ -6,6 +6,12 @@ from typing import List
 
 from Classroom_pb2 import Question
 
+logger = logging.getLogger('Student')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(ch)
+
 
 class Student:
     def __init__(self) -> None:
@@ -14,50 +20,47 @@ class Student:
         self.asyncProfessor = Classroom_pb2_grpc.ProfessorServiceStub(channel)
 
     def ask_simple_question(self, question: str):
-        logging.info("Asking the professor a simple question.")
+        logger.info("[Python Student]: {}".format(question))
 
         question_proto = Question(id=str(uuid.uuid1()), text=question)
 
-        answer_future = self.asyncProfessor.askQuestionWithAnswer(question_proto)
-        answer = answer_future.result()
-        logging.info("Professor: {}".format(answer.text))
+        answer = self.asyncProfessor.askSimpleQuestion(question_proto)
 
-        logging.info("Python Student: Thank you professor.")
+        logger.info("[Professor]: {}".format(answer.text))
+
+        logger.info("[Python Student]: Thank you professor.")
 
     def ask_multiple_simple_questions(self, questions: List[str]):
-        logging.info("Asking the professor multiple simple questions.")
+        logger.info("[Python Student]: {}".format(' | '.join(questions)))
 
-        question_protos = [Question(id=str(uuid.uuid1()), text=question)
-                           for question in questions]
+        question_protos = (Question(id=str(uuid.uuid1()), text=question) for question in questions)
 
-        answers = self.asyncProfessor.askQuestionsWithAnswer(question_protos)
+        answer = self.asyncProfessor.askMultipleSimpleQuestions(question_protos)
 
-        for answer in answers:
-            logging.info("Professor: {}".format(answer.text))
+        logger.info("[Professor]: {}".format(answer.text))
 
-        logging.info("Python Student: Thank you professor.")
+        logger.info("[Python Student]: Thank you professor.")
 
     def ask_complex_question(self, question: str):
-        logging.info("Asking the professor a complex question.")
+        logger.info("[Python Student]: {}".format(question))
 
         question_proto = Question(id=str(uuid.uuid1()), text=question)
 
-        answers = self.asyncProfessor.askQuestionsWithAnswer(question_proto)
+        answers = self.asyncProfessor.askComplexQuestion(question_proto)
 
         for answer in answers:
-            logging.info("Professor: {}".format(answer.text))
+            logger.info("[Professor]: {}".format(answer.text))
 
-        logging.info("Python Student: Thank you professor.")
+        logger.info("[Python Student]: Thank you professor.")
 
     def ask_multiple_complex_questions(self, questions: List[str]):
-        logging.info("Asking the professor multiple complex questions.")
+        logger.info("[Python Student]: {}".format(' | '.join(questions)))
 
-        question_protos = [Question(id=str(uuid.uuid1()), text=question)
-                           for question in questions]
+        question_protos = (Question(id=str(uuid.uuid1()), text=question) for question in questions)
 
-        answers = self.asyncProfessor.askQuestionsWithAnswer(question_protos)
+        answers = self.asyncProfessor.askMultipleComplexQuestions(question_protos)
 
         for answer in answers:
-            logging.info("Professor: {}".format(answer.text))
+            logger.info("[Professor]: {}".format(answer.text))
 
-        logging.info("Python Student: Thank you professor.")
+        logger.info("[Python Student]: Thank you professor.")
