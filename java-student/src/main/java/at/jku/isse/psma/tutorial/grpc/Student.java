@@ -23,7 +23,7 @@ public class Student {
     private class LoggerStreamObserver implements StreamObserver<Answer> {
         @Override
         public void onNext(final Answer value) {
-            logger.info("Professor X: {}", value.getText());
+            logger.info("Professor: {}", value.getText());
         }
 
         @Override
