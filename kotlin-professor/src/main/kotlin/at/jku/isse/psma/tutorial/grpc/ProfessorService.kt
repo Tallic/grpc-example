@@ -19,6 +19,7 @@ class ProfessorService(val name: String) : ProfessorServiceGrpc.ProfessorService
             .withDefault { "I cannot help you with that." }
 
     private fun findAnswers(question: String): List<String> {
+
         val answer = knowledge.entries
                 .filter { (key, _) -> question.toLowerCase().contains(key) }
                 .map { it.value }
@@ -58,9 +59,7 @@ class ProfessorService(val name: String) : ProfessorServiceGrpc.ProfessorService
             override fun onNext(question: Question) {
                 if (id.isEmpty()) id = question.id
 
-                answers.add(
-                        findAnswers(question.text).joinToString(" ")
-                )
+                answers.add(findAnswers(question.text).first())
             }
 
             override fun onCompleted() {

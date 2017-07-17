@@ -5,6 +5,7 @@ import org.testng.annotations.Test;
 
 public class StudentTest {
 
+
     @Test
     public void askSimpleQuestion_name_success() {
         Student student = new Student();
@@ -34,7 +35,7 @@ public class StudentTest {
         Student student = new Student();
         student.askMultipleSimpleQuestions(
                 ImmutableList.of(
-                        "What is your name?",
+                        "What is your name? What is MDE?",
                         "What is your age?",
                         "What's my mark in this course?"
                 )

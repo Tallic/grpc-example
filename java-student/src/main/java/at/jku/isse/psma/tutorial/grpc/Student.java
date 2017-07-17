@@ -14,7 +14,6 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings("Duplicates")
 public class Student {
 
     private static final Logger logger = LoggerFactory.getLogger(Student.class);
