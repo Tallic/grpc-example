@@ -8,29 +8,6 @@ option java_multiple_files = true;
 
 // ---- Services ----
 
-service ProfessorService {
-    rpc askSimpleQuestion (Question) returns (Answer) {
-    }
-
-    rpc askMultipleSimpleQuestions (stream Question) returns (Answer) {
-    }
-
-    rpc askComplexQuestion (Question) returns (stream Answer) {
-    }
-
-    rpc askMultipleComplexQuestions (stream Question) returns (stream Answer) {
-    }
-}
 
 // ---- Messages ----
 
-message Question {
-    string id = 1;
-    string name = 2;
-    string text = 3;
-}
-
-message Answer {
-    string id = 1;
-    string text = 2;
-}
